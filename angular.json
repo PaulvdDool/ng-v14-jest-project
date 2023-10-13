@@ -3,26 +3,22 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ng-v14-jest-project": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
+    "Angular": {
       "root": "",
       "sourceRoot": "src",
+      "projectType": "application",
       "prefix": "app",
+      "schematics": {},
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "ngx-build-plus:browser",
           "options": {
-            "outputPath": "dist/ng-v14-jest-project",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
+            "aot": true,
+            "outputPath": "dist/",
+            "index": "src/client/index.html",
+            "main": "src/client/app/main.ts",
+            "polyfills": "src/client/polyfills.ts",
+            "tsConfig": "tsconfig.json",
             "assets": [
               "src/favicon.ico",
               "src/assets"
@@ -30,78 +26,112 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "sourceMap": {
+              "scripts": true,
+              "styles": true,
+              "hidden": false,
+              "vendor": false
+            },
+            "optimization": {
+              "scripts": false,
+              "styles": false
+            },
+            "outputHashing": "none",
+            "commonChunk": true,
+            "vendorChunk": true,
+            "scripts": [],
+            "preserveSymlinks": true,
+            "baseHref": "/testproject/",
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
-                  "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
-                },
-                {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "6kb"
                 }
               ],
+              "optimization": false,
+              "outputHashing": "bundles",
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
+                  "replace": "src/client/config/dev.ts",
+                  "with": "src/client/config/prod.ts"
+                }
+              ]
+            },
+            "localized": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ],
-              "outputHashing": "all"
-            },
-            "development": {
-              "buildOptimizer": false,
-              "optimization": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
+              "deleteOutputPath": false,
+              "localize": true,
+              "optimization": true,
+              "outputHashing": "bundles",
+              "baseHref": "/",
+              "sourceMap": {
+                "hidden": true
+              },
+              "outputPath": "dist/testproject",
+              "i18nMissingTranslation": "warning",
+              "tsConfig": "./tsconfig.json",
+              "buildOptimizer": true
             }
           },
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "ngx-build-plus:dev-server",
+          "options": {
+            "browserTarget": "Angular:build",
+            "hmr": true,
+            "disableHostCheck": true,
+            "servePath": "testproject",
+            "port": 9999
+          },
           "configurations": {
             "production": {
-              "browserTarget": "ng-v14-jest-project:build:production"
-            },
-            "development": {
-              "browserTarget": "ng-v14-jest-project:build:development"
+              "hmr": false,
+              "browserTarget": "Angular:build:production"
             }
-          },
-          "defaultConfiguration": "development"
+          }
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "ngx-build-plus:extract-i18n",
           "options": {
-            "browserTarget": "ng-v14-jest-project:build"
+            "browserTarget": "Angular:build:localized",
+            "outFile": "dist/messages.xlf"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "ngx-build-plus:karma",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": []
+            "tsConfig": "tsconfig.json",
+            "configPath": "jest.config.ts"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false,
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }
